@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QA – Math Reboot 9 | Quadratic Equations & Nested Radicals</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#0f2556;--navy2:#1a3a7c;--navy3:#2851a3;
+  --gold:#e8a020;--green:#1a7a3c;--red:#b91c1c;
+  --purple:#7c3aed;--teal:#0d7a6e;--orange:#c45000;
+  --gray:#9ca3af;--lightbg:#f3f4f8;--border:#d1d5db;
+  --text:#1e293b;--subtext:#64748b
+}
+html,body{height:100%;font-family:'IBM Plex Sans',sans-serif;background:var(--lightbg);color:var(--text);font-size:14px}
+.header{background:var(--navy);color:white;display:flex;align-items:center;justify-content:space-between;padding:0 18px;height:52px;position:fixed;top:0;left:0;right:0;z-index:200;border-bottom:3px solid var(--gold)}
+.logo{font-size:16px;font-weight:700;color:white}.logo span{color:var(--gold)}
+.hc{display:flex;align-items:center;gap:10px}
+.sec-badge{background:var(--navy3);padding:4px 10px;border-radius:4px;font-size:11px;font-weight:600;letter-spacing:1px;text-transform:uppercase}
+.h-info{font-size:11px;color:#aac}
+.timer-wrap{display:flex;align-items:center;gap:8px}
+.timer-label{font-size:10px;color:#99b;letter-spacing:1px;text-transform:uppercase}
+.timer{font-family:'IBM Plex Mono',monospace;font-size:22px;font-weight:500;color:#fff;background:var(--navy2);border:1.5px solid #4466aa;padding:3px 14px;border-radius:6px;min-width:90px;text-align:center;letter-spacing:2px}
+.timer.warn{color:var(--gold);border-color:var(--gold);animation:pulse 1s ease-in-out infinite}
+.timer.danger{color:#ff6b6b;border-color:#ff6b6b;animation:pulse .5s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.7}}
+.h-student{font-size:11px;color:#ccddff;max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.section-tabs{position:fixed;top:52px;left:0;right:0;z-index:190;background:var(--navy2);display:flex;align-items:center;padding:5px 16px;gap:2px;border-bottom:1px solid #2a4a9a;overflow-x:auto}
+.tab{padding:5px 12px;border-radius:4px 4px 0 0;font-size:11px;font-weight:600;cursor:pointer;color:#99b;background:transparent;border:none;white-space:nowrap;transition:all .15s}
+.tab.active{background:white;color:var(--navy)}
+.q-ctr{margin-left:auto;font-size:12px;color:#aac;white-space:nowrap;padding-left:10px;font-weight:600}
+.main{display:flex;height:100vh;padding-top:90px;padding-bottom:56px}
+.q-panel{flex:1;overflow-y:auto;background:white;border-right:1px solid var(--border)}
+.q-inner{padding:22px 28px;max-width:820px}
+
+/* MATH DISPLAY */
+.eq-box{font-family:'IBM Plex Mono',monospace;font-size:16px;font-weight:600;letter-spacing:0.5px;color:var(--navy);background:#f0f4ff;border:1.5px solid #c8d8f8;border-radius:8px;padding:12px 20px;margin-bottom:14px;text-align:center}
+.frac{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 1px;line-height:1.2}
+.frac .num{border-bottom:1.5px solid currentColor;padding:0 3px;font-size:.9em}
+.frac .den{padding:0 3px;font-size:.9em}
+.mf{font-style:italic;font-weight:600;color:var(--navy)}
+.sqrt-expr{font-family:'IBM Plex Mono',monospace}
+
+.q-meta{display:flex;align-items:center;gap:7px;margin-bottom:10px;flex-wrap:wrap}
+.q-num{font-size:15px;font-weight:700;color:var(--navy)}
+.badge{display:inline-flex;align-items:center;padding:2px 9px;border-radius:10px;font-size:11px;font-weight:600}
+.b-s1{background:#e0eaff;color:var(--navy3)}.b-s2{background:#f3e8ff;color:var(--purple)}.b-s3{background:#e6f7f4;color:var(--teal)}
+.b-tita{background:#e8f5ee;color:var(--green)}.b-mcq{background:#fce4ec;color:#b91c6a}
+.q-text{font-size:14px;line-height:1.85;margin-bottom:12px;font-weight:500;color:var(--text)}
+.instr{background:#fffbe6;border:1px solid #f0d060;border-radius:5px;padding:7px 12px;font-size:11.5px;color:#7a5c00;margin-bottom:12px;line-height:1.5}
+
+/* MCQ OPTIONS */
+.options{list-style:none;display:flex;flex-direction:column;gap:8px}
+.option{display:flex;align-items:center;gap:10px;padding:10px 14px;border:1.5px solid var(--border);border-radius:7px;cursor:pointer;transition:border-color .15s,background .15s;font-size:13.5px;line-height:1.65;user-select:none}
+.option:hover{border-color:var(--navy3);background:#f0f4ff}
+.option.selected{border-color:var(--navy3);background:#e8eeff}
+.opt-circle{width:18px;height:18px;border:2px solid var(--border);border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center}
+.option.selected .opt-circle{border-color:var(--navy3)}
+.opt-dot{width:9px;height:9px;border-radius:50%;background:var(--navy3);display:none}
+.option.selected .opt-dot{display:block}
+.opt-lbl{font-weight:700;color:var(--navy3);margin-right:5px;flex-shrink:0;min-width:18px}
+.opt-content{font-family:'IBM Plex Sans',sans-serif}
+
+/* TITA */
+.tita-wrap{margin-top:8px}
+.tita-label{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--subtext);margin-bottom:8px}
+.tita-input{font-family:'IBM Plex Mono',monospace;font-size:28px;font-weight:700;letter-spacing:4px;text-align:center;border:2.5px solid var(--navy3);border-radius:8px;padding:12px 20px;width:260px;color:var(--navy);background:#f8f9ff;display:block;transition:border-color .15s,box-shadow .15s}
+.tita-input:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px rgba(232,160,32,.2)}
+.tita-hint{font-size:11px;color:var(--subtext);margin-top:6px}
+
+/* RIGHT PANEL */
+.r-panel{width:222px;background:#f8f9fc;border-left:1px solid var(--border);overflow-y:auto;padding:12px;flex-shrink:0}
+.r-title{font-size:10.5px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--subtext);margin-bottom:8px}
+.score-info{background:white;border:1px solid var(--border);border-radius:6px;padding:10px 12px;margin-bottom:12px}
+.si-row{display:flex;justify-content:space-between;font-size:12px;padding:2px 0}
+.si-row .v{font-weight:700}.si-row.g .v{color:var(--green)}.si-row.r .v{color:var(--red)}
+.tita-note{font-size:10.5px;color:#aab;margin-top:6px;line-height:1.4}
+.legend{margin-bottom:12px}
+.leg-item{display:flex;align-items:center;gap:6px;margin:3px 0;font-size:10.5px;color:var(--subtext)}
+.leg-dot{width:10px;height:10px;border-radius:2px;flex-shrink:0}
+.sj-wrap{display:flex;gap:3px;margin-bottom:12px;flex-wrap:wrap}
+.sj-btn{padding:3px 9px;border:1.5px solid var(--border);border-radius:12px;font-size:10px;font-weight:600;cursor:pointer;color:var(--subtext);background:white;transition:all .15s}
+.sj-btn:hover,.sj-btn.active{background:var(--navy3);color:white;border-color:var(--navy3)}
+.pal-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:3px}
+.pb{width:28px;height:28px;border:none;border-radius:3px;font-size:9px;font-weight:700;cursor:pointer;color:white;transition:transform .1s}
+.pb:hover{transform:scale(1.12)}.pb.cur{box-shadow:0 0 0 2px var(--gold)}
+.pb.p-nv{background:#9ca3af}.pb.p-na{background:#ef4444}.pb.p-ans{background:#16a34a}.pb.p-mrv{background:var(--purple)}
+
+/* BOTTOM NAV */
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;z-index:200;background:#eef0f5;border-top:1px solid var(--border);padding:9px 16px;display:flex;justify-content:space-between;align-items:center}
+.nav-left,.nav-right{display:flex;gap:8px}
+.btn{padding:7px 15px;border:none;border-radius:5px;font-size:12.5px;font-weight:600;cursor:pointer;font-family:'IBM Plex Sans',sans-serif;transition:opacity .15s,transform .1s}
+.btn:hover{opacity:.88;transform:translateY(-1px)}
+.btn-prev{background:#64748b;color:white}.btn-mark{background:var(--purple);color:white}
+.btn-clear{background:#f97316;color:white}.btn-save{background:var(--green);color:white}
+.btn-submit{background:var(--navy);color:white;border:2px solid var(--gold)}
+
+/* OVERLAYS */
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:500;justify-content:center;align-items:center}
+.overlay.show{display:flex}
+.modal{background:white;border-radius:12px;padding:28px 32px;max-width:720px;width:94%;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.3)}
+.modal::-webkit-scrollbar{width:6px}.modal::-webkit-scrollbar-thumb{background:#c0c8d8;border-radius:3px}
+.modal-title{font-size:20px;font-weight:700;color:var(--navy);margin-bottom:4px;text-align:center}
+.modal-sub{font-size:12.5px;color:var(--subtext);text-align:center;margin-bottom:18px}
+.score-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px}
+.sc{background:var(--lightbg);border-radius:8px;padding:14px 10px;text-align:center;border:1px solid var(--border)}
+.sc-label{font-size:10px;color:var(--subtext);text-transform:uppercase;letter-spacing:.8px;margin-bottom:6px}
+.sc-val{font-size:26px;font-weight:700;line-height:1}
+.sc-val.blue{color:var(--navy3)}.sc-val.grn{color:var(--green)}.sc-val.gld{color:var(--gold)}
+.sep{height:1px;background:var(--border);margin:14px 0}
+.a-title{font-size:14px;font-weight:700;color:var(--navy);margin:14px 0 8px}
+table.atbl{width:100%;border-collapse:collapse;font-size:12.5px}
+table.atbl th{background:var(--navy);color:white;padding:8px 10px;text-align:center;font-weight:600;font-size:11px}
+table.atbl td{padding:7px 10px;text-align:center;border-bottom:1px solid #f0f0f0}
+table.atbl tr:nth-child(even) td{background:#f8f9fc}
+.rtabs{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap}
+.rtab{padding:5px 12px;border-radius:5px;font-size:12px;font-weight:600;cursor:pointer;border:1.5px solid var(--border);background:white;color:var(--subtext)}
+.rtab.active{background:var(--navy);color:white;border-color:var(--navy)}
+.rq{padding:9px 0;border-bottom:1px solid #f0f0f0}
+.rq-hdr{display:flex;align-items:center;gap:6px;margin-bottom:3px;flex-wrap:wrap}
+.rq-num{font-weight:700;font-size:12px;color:var(--navy3)}
+.rq-st{font-size:11px;margin-left:auto;font-weight:600}
+.rq-st.ok{color:var(--green)}.rq-st.no{color:var(--red)}.rq-st.sk{color:var(--gray)}
+.rq-ans{font-size:12px;margin-top:2px}.rq-your{color:#555}.rq-correct{color:var(--green);font-weight:600}
+.s-strip{background:var(--lightbg);border:1px solid var(--border);border-radius:6px;padding:8px 14px;margin-bottom:14px;font-size:12px;color:var(--subtext);display:flex;flex-wrap:wrap;gap:6px 18px}
+.s-strip strong{color:var(--navy);font-weight:700}
+
+/* CONFIRM + ENTRY */
+.confirm-box{background:white;border-radius:12px;padding:28px;max-width:380px;text-align:center}
+.confirm-box h3{font-size:18px;font-weight:700;color:var(--navy);margin-bottom:10px}
+.confirm-box p{font-size:13px;color:var(--subtext);margin-bottom:8px;line-height:1.6}
+.c-stats{background:var(--lightbg);border-radius:6px;padding:12px;margin:12px 0;font-size:13px;display:flex;flex-direction:column;gap:4px}
+.cs-row{display:flex;justify-content:space-between}
+.c-btns{display:flex;gap:10px;margin-top:16px;justify-content:center}
+.btn-cancel{background:#e5e7eb;color:var(--text)}
+.entry-ov{position:fixed;inset:0;background:linear-gradient(145deg,#070f24 0%,#0f2556 55%,#1a3a7c 100%);z-index:1000;display:flex;align-items:center;justify-content:center}
+.entry-card{background:white;border-radius:16px;padding:36px 40px;width:440px;max-width:93vw;box-shadow:0 28px 80px rgba(0,0,0,.5)}
+.entry-logo{font-size:20px;font-weight:700;color:var(--navy);margin-bottom:4px}.entry-logo span{color:var(--gold)}
+.entry-title{font-size:15px;font-weight:700;color:var(--navy);margin-bottom:3px}
+.entry-sub{font-size:12px;color:var(--subtext);margin-bottom:18px;line-height:1.5}
+.entry-divider{height:1px;background:var(--border);margin-bottom:18px}
+.entry-field{margin-bottom:12px}
+.entry-label{display:block;font-size:10.5px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--subtext);margin-bottom:5px}
+.entry-input{width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:6px;font-size:13.5px;font-family:'IBM Plex Sans',sans-serif;color:var(--text);transition:border-color .15s}
+.entry-input:focus{outline:none;border-color:var(--navy3);box-shadow:0 0 0 3px rgba(40,81,163,.15)}
+.entry-input::placeholder{color:#b0b8c8}
+select.entry-input{cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%2364748b' d='M1 1l5 5 5-5'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:32px}
+.entry-err{color:#b91c1c;font-size:12px;font-weight:600;margin-bottom:10px;min-height:18px}
+.entry-btn{width:100%;padding:11px;background:var(--navy);color:white;border:2px solid var(--gold);border-radius:7px;font-size:14px;font-weight:700;cursor:pointer;font-family:'IBM Plex Sans',sans-serif}
+.entry-btn:hover{background:var(--navy2)}
+.entry-note{font-size:11px;color:var(--subtext);text-align:center;margin-top:10px;line-height:1.5}
+.toast{position:fixed;bottom:70px;left:50%;transform:translateX(-50%);background:#1a7a3c;color:white;padding:8px 22px;border-radius:20px;font-size:12px;font-weight:600;opacity:0;transition:opacity .4s;z-index:800;pointer-events:none;white-space:nowrap}
+.toast.show{opacity:1}.toast.err{background:#b91c1c}
+@keyframes progbar{from{width:0%}to{width:100%}}
+.prog-bar{height:100%;background:var(--green);border-radius:2px;animation:progbar 2.8s linear forwards}
+</style>
+</head>
+<body>
+
+<div class="entry-ov" id="entry-ov">
+  <div class="entry-card">
+    <div class="entry-logo">QA <span>Math Reboot 9</span></div>
+    <div class="entry-title">Quadratic Equations &amp; Nested Radicals</div>
+    <div class="entry-sub">Solving Quadratics · Root Properties · Nested Radicals &amp; Continued Fractions<br>The 60-minute timer starts after you click <strong>Begin Test</strong>.</div>
+    <div class="entry-divider"></div>
+    <div class="entry-field"><label class="entry-label">Student Name *</label><input class="entry-input" id="inp-name" type="text" placeholder="Your full name" autocomplete="off"/></div>
+    <div class="entry-field">
+      <label class="entry-label">Center *</label>
+      <select class="entry-input" id="inp-center">
+        <option value="">— Select your center —</option>
+        <option>Ahmedabad</option><option>Gandhinagar</option><option>Vadodara</option><option>Surat</option><option>Gujarat Online</option>
+      </select>
+    </div>
+    <div class="entry-field"><label class="entry-label">Batch *</label><input class="entry-input" id="inp-batch" type="text" placeholder="e.g. CAT 26 · 2701" autocomplete="off"/></div>
+    <div class="entry-err" id="entry-err"></div>
+    <button class="entry-btn" onclick="startTest()">Begin Test ▶</button>
+    <div class="entry-note">38 Questions · 60 Minutes · 3 Sections · MCQ: −1 for wrong · TITA: no negative</div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<div class="header">
+  <div class="logo">QA <span>Math Reboot 9</span></div>
+  <div class="hc"><div class="sec-badge">Quadratics &amp; Radicals</div><div class="h-info">38 Questions &nbsp;·&nbsp; 60 Minutes &nbsp;·&nbsp; MCQ −1 Negative</div></div>
+  <div style="display:flex;align-items:center;gap:14px">
+    <div class="h-student" id="h-student"></div>
+    <div class="timer-wrap"><div class="timer-label">Time Left</div><div class="timer" id="timer">60:00</div></div>
+  </div>
+</div>
+
+<div class="section-tabs">
+  <div class="tab active" id="tab1">§1 · Solving Quadratics (Q1–14)</div>
+  <div class="tab" id="tab2">§2 · Root Properties (Q15–25)</div>
+  <div class="tab" id="tab3">§3 · Nested Radicals (Q26–38)</div>
+  <div class="q-ctr">Q&nbsp;<span id="cur-q">1</span>&nbsp;/&nbsp;38</div>
+</div>
+
+<div class="main">
+  <div class="q-panel"><div class="q-inner" id="q-inner"></div></div>
+  <div class="r-panel">
+    <div class="score-info">
+      <div class="r-title">Marking Scheme</div>
+      <div class="si-row g"><span>Correct</span><span class="v">+3</span></div>
+      <div class="si-row r"><span>Wrong (MCQ)</span><span class="v">−1</span></div>
+      <div class="si-row"><span>Wrong (TITA)</span><span class="v" style="color:#888">0</span></div>
+      <div class="si-row"><span style="color:#888">Skipped</span><span class="v" style="color:#888">0</span></div>
+      <div class="tita-note">MCQ: −1 for wrong.<br>TITA: no negative marking.</div>
+    </div>
+    <div class="legend">
+      <div class="r-title">Status</div>
+      <div class="leg-item"><div class="leg-dot" style="background:#9ca3af"></div>Not Visited</div>
+      <div class="leg-item"><div class="leg-dot" style="background:#ef4444"></div>Not Answered</div>
+      <div class="leg-item"><div class="leg-dot" style="background:#16a34a"></div>Answered</div>
+      <div class="leg-item"><div class="leg-dot" style="background:var(--purple)"></div>Marked for Review</div>
+    </div>
+    <div class="r-title">Jump to Section</div>
+    <div class="sj-wrap">
+      <button class="sj-btn" onclick="goToQ(1)">§1</button>
+      <button class="sj-btn" onclick="goToQ(15)">§2</button>
+      <button class="sj-btn" onclick="goToQ(26)">§3</button>
+    </div>
+    <div class="r-title">Question Palette</div>
+    <div class="pal-grid" id="palette"></div>
+  </div>
+</div>
+
+<div class="bottom-nav">
+  <div class="nav-left">
+    <button class="btn btn-prev" onclick="navigate(-1)">◀ Prev</button>
+    <button class="btn btn-mark" onclick="markForReview()">⚑ Mark</button>
+    <button class="btn btn-clear" onclick="clearResp()">✕ Clear</button>
+  </div>
+  <div class="nav-right">
+    <button class="btn btn-save" onclick="saveAndNext()">Save &amp; Next ▶</button>
+    <button class="btn btn-submit" onclick="showConfirm()">Submit Test</button>
+  </div>
+</div>
+
+<div class="overlay" id="confirm-ov">
+  <div class="confirm-box">
+    <h3>Submit Test?</h3>
+    <p>Math Reboot 9 · Quadratic Equations &amp; Nested Radicals</p>
+    <div class="c-stats" id="c-stats"></div>
+    <div class="c-btns">
+      <button class="btn btn-cancel" onclick="closeConfirm()">Cancel</button>
+      <button class="btn btn-submit" onclick="doSubmit()">Yes, Submit</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="timeup-ov">
+  <div style="background:white;border-radius:16px;padding:40px 48px;text-align:center;max-width:360px;box-shadow:0 20px 60px rgba(0,0,0,.3)">
+    <div style="font-size:36px;margin-bottom:12px">⏱</div>
+    <div style="font-size:20px;font-weight:700;color:var(--red);margin-bottom:8px">Time's Up!</div>
+    <div style="font-size:13px;color:var(--subtext);margin-bottom:20px">60 minutes elapsed. Submitting now.</div>
+    <button class="btn btn-submit" style="width:100%" onclick="doSubmit()">View Results</button>
+  </div>
+</div>
+
+<div class="overlay" id="submitting-ov">
+  <div style="background:white;border-radius:16px;padding:40px 48px;text-align:center;max-width:360px">
+    <div style="font-size:48px;margin-bottom:16px">✅</div>
+    <div style="font-size:19px;font-weight:700;color:var(--navy);margin-bottom:10px">Responses Submitted!</div>
+    <div style="font-size:13px;color:var(--subtext);line-height:1.6">Calculating your score…</div>
+    <div style="margin-top:20px;height:4px;background:#e5e7eb;border-radius:2px;overflow:hidden"><div class="prog-bar"></div></div>
+  </div>
+</div>
+
+<div class="overlay" id="results-ov">
+  <div class="modal">
+    <div class="modal-title">📊 Math Reboot 9 · Results</div>
+    <div class="modal-sub">Quadratic Equations &amp; Nested Radicals · MCQ: −1 wrong · TITA: no negative</div>
+    <div class="s-strip" id="s-strip"></div>
+    <div class="score-grid" id="score-cards"></div>
+    <div class="sep"></div>
+    <div class="a-title">Section-wise Analysis</div>
+    <table class="atbl" id="atbl"></table>
+    <div class="sep"></div>
+    <div class="a-title">Question-wise Review</div>
+    <div class="rtabs">
+      <button class="rtab active" onclick="filterReview('all',this)">All (38)</button>
+      <button class="rtab" onclick="filterReview('correct',this)">✓ Correct</button>
+      <button class="rtab" onclick="filterReview('wrong',this)">✗ Wrong</button>
+      <button class="rtab" onclick="filterReview('skip',this)">— Skipped</button>
+    </div>
+    <div id="review-list"></div>
+    <div style="display:flex;gap:10px;margin-top:16px">
+      <button onclick="downloadPDF()" style="flex:1;padding:10px;background:var(--navy);color:white;border:none;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;font-family:'IBM Plex Sans',sans-serif">📄 Download Answer Key</button>
+      <button onclick="closeResults()" style="flex:1;padding:10px;background:#64748b;color:white;border:none;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;font-family:'IBM Plex Sans',sans-serif">Close</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const GF={
+  url:'https://docs.google.com/forms/d/e/1FAIpQLSdejTijdysYYavuFjpUnKNScOhvoaGx2T5RRZeNyF2A68sWDA/formResponse',
+  f:{name:'entry.821793197',center:'entry.718554192',batch:'entry.1677067231',
+     total:'entry.394084461',correct:'entry.221833569',wrong:'entry.1128942083',
+     skip:'entry.643971374',time:'entry.1634701790',resp:'entry.2004208374'}
+};
+const L=['A','B','C','D'];
+
+// Helper HTML snippets for repeated math
+const x2='<i>x</i><sup>2</sup>';
+const x4='<i>x</i><sup>4</sup>';
+const t4='<i>t</i><sup>4</sup>';
+const t2='<i>t</i><sup>2</sup>';
+const sq=s=>`&#8730;${s}`;  // √s
+const fr=(n,d)=>`<span class="frac"><span class="num">${n}</span><span class="den">${d}</span></span>`;
+const α='<i>α</i>', β='<i>β</i>';
+
+// All 38 questions
+// sec 1 = §1 Solving Quadratics     Q1–Q14
+// sec 2 = §2 Root Properties         Q15–Q25
+// sec 3 = §3 Nested Radicals         Q26–Q38
+// mcq:true → answer = option index 0-3, options = HTML string array
+// mcq:false → numeric TITA, answer = string
+
+const Q=[
+// ── §1: SOLVING QUADRATICS ──
+{id:1,sec:1,mcq:true,
+ eq:`${x2} &#8722; 23<i>x</i> + 132 = 0`,
+ text:'Find the <strong>roots</strong> of the quadratic equation.',
+ options:['11, 12','12, 13','9, 14','6, 22'],answer:0},
+
+{id:2,sec:1,mcq:true,
+ eq:`${x2} + 4<i>x</i> &#8722; 96 = 0`,
+ text:'Find the <strong>roots</strong> of the equation.',
+ options:['8, &#8722;12','6, &#8722;16','12, &#8722;8','&#8722;8, 12'],answer:0},
+
+{id:3,sec:1,mcq:true,
+ eq:`6${x2} &#8722; 19<i>x</i> + 15 = 0`,
+ text:'Solve orally (where the leading coefficient ≠ 1). Find the <strong>roots</strong>.',
+ options:[`${fr(5,2)}, ${fr(3,5)}`,`${fr(5,3)}, ${fr(3,2)}`,`${fr(3,2)}, &#8722;${fr(5,3)}`,`&#8722;${fr(5,2)}, &#8722;${fr(3,5)}`],answer:1},
+
+{id:4,sec:1,mcq:true,
+ eq:`2${x2} &#8722; 2&#8730;6 &#183; <i>x</i> + 3 = 0`,
+ text:'Solve the equation. Find the <strong>roots</strong>.',
+ options:[`&#8730;6, &#8722;&#8730;6`,`${fr('&#8730;6',4)}, ${fr('&#8730;6',4)}`,`${fr('&#8730;6',2)}, ${fr('&#8730;6',2)}`,`&#8722;${fr('&#8730;6',2)}, &#8722;${fr('&#8730;6',2)}`],answer:2},
+
+{id:5,sec:1,mcq:true,
+ eq:`${x2} &#8722; 3<i>x</i> + 2 = 0`,
+ text:'Find the <strong>roots</strong>.',
+ options:['&#8722;1, &#8722;2','1, 2','1, &#8722;2','&#8722;1, 2'],answer:1},
+
+{id:6,sec:1,mcq:true,
+ eq:`${x2} &#8722; 5<i>x</i> &#8722; 6 = 0`,
+ text:'Find the <strong>integral roots</strong>.',
+ options:['6, &#8722;1','&#8722;6, 1','3, &#8722;2','&#8722;2, 3'],answer:0},
+
+{id:7,sec:1,mcq:true,
+ eq:`12${x2} + 29<i>x</i> + 15 = 0`,
+ text:'Solve for <i>x</i>. Find the <strong>roots</strong>.',
+ options:[`${fr(3,4)}, ${fr(5,3)}`,`&#8722;${fr(3,4)}, &#8722;${fr(5,3)}`,`&#8722;${fr(4,3)}, &#8722;${fr(3,5)}`,`&#8722;${fr(3,5)}, ${fr(4,3)}`],answer:1},
+
+{id:8,sec:1,mcq:true,
+ eq:`${fr('<i>x</i>+1','<i>x</i>&#8722;1')} + ${fr('<i>x</i>&#8722;2','<i>x</i>+2')} = 3`,
+ text:'Find the values of <i>x</i> satisfying the equation.',
+ options:['5, 2','&#8722;5, &#8722;2','5, &#8722;2','&#8722;5, 2'],answer:3},
+
+{id:9,sec:1,mcq:true,
+ eq:`${x4} &#8722; 13${x2} + 36 = 0`,
+ text:'Solve for <i>x</i>. Find <strong>all roots</strong>.',
+ options:['&#8722;3, &#8722;2, 2, 3','&#8722;9, &#8722;4, 4, 9','&#8722;3, 2','2, &#8722;3'],answer:0},
+
+{id:10,sec:1,mcq:true,
+ eq:`&#8730;3 &#183; ${x2} + 11<i>x</i> + 6&#8730;3 = 0`,
+ text:'Find the <strong>roots</strong>.',
+ options:[`3&#8730;3, &#8722;${fr('2&#8730;3',3)}`,`&#8722;3&#8730;3, ${fr('&#8730;3',3)}`,`&#8730;3, &#8722;${fr('2&#8730;3',3)}`,`&#8722;3&#8730;3, &#8722;${fr('2&#8730;3',3)}`],answer:3},
+
+{id:11,sec:1,mcq:true,
+ eq:`${x2} &#8722; 13<i>x</i> + 40 = 0`,
+ text:'Find the <strong>roots</strong>.',
+ options:['&#8722;5, &#8722;8','5, 8','4, 10','&#8722;4, &#8722;10'],answer:1},
+
+{id:12,sec:1,mcq:false,
+ eq:`${x2} &#8722; <i>bx</i> + <i>c</i> = 0`,
+ text:'The roots of this equation are <strong>two consecutive integers</strong>. Find the value of <i>b</i>² &#8722; 4<i>c</i>.',
+ answer:'1',tol:0},
+
+{id:13,sec:1,mcq:true,
+ text:'The <strong>sum of the roots</strong> of a quadratic equation is <strong>3</strong> while the <strong>sum of the squares</strong> of its roots is <strong>7</strong>. Find the equation.',
+ options:[`${x2} &#8722; 3<i>x</i> + 1 = 0`,`${x2} + 3<i>x</i> + 1 = 0`,`${x2} &#8722; 3<i>x</i> &#8722; 1 = 0`,`${x2} + 3<i>x</i> &#8722; 1 = 0`],answer:0},
+
+{id:14,sec:1,mcq:true,
+ eq:`${t4} + 4${t2} + 4 = 0`,
+ text:'Find the <strong>roots</strong> of the equation.',
+ options:['(&#8722;2, 0)','(&#8722;8, &#8722;8)','No real roots','(&#8722;2, &#8722;8)'],answer:2},
+
+// ── §2: ROOT PROPERTIES ──
+{id:15,sec:2,mcq:false,
+ eq:`${x2} &#8722; 7<i>x</i> + 12 = 0`,
+ text:`If ${α} and ${β} are the roots of the equation, find the value of <strong>${α}³ + ${β}³</strong>.`,
+ answer:'91',tol:0},
+
+{id:16,sec:2,mcq:false,
+ eq:`3${x2} + <i>kx</i> + 12 = 0`,
+ text:'Find the value of <i>k</i> if the roots are <strong>equal in magnitude but opposite in sign</strong>.',
+ answer:'0',tol:0},
+
+{id:17,sec:2,mcq:true,
+ eq:`(<i>m</i> &#8722; 3)${x2} &#8722; 4<i>x</i> + (2<i>m</i> + 1) = 0`,
+ text:'For what value of <i>m</i> are the roots <strong>reciprocals of each other</strong>? (m ≠ 3)',
+ options:['<i>m</i> = &#8722;4','<i>m</i> = 2','<i>m</i> = &#8722;2','<i>m</i> = 4'],answer:0},
+
+{id:18,sec:2,mcq:true,
+ text:`Form a quadratic equation whose roots are <strong>(3 + &#8730;5)</strong> and <strong>(3 &#8722; &#8730;5)</strong>.`,
+ options:[`${x2} + 6<i>x</i> + 4 = 0`,`${x2} &#8722; 3<i>x</i> + 4 = 0`,`${x2} + 5<i>x</i> + 4 = 0`,`${x2} &#8722; 6<i>x</i> + 4 = 0`],answer:3},
+
+{id:19,sec:2,mcq:true,
+ eq:`${x2} &#8722; <i>px</i> + <i>q</i> = 0`,
+ text:`If ${α} and ${β} are the roots, find the equation whose roots are <strong>${fr(1,α)}</strong> and <strong>${fr(1,β)}</strong>.`,
+ options:[`<i>px</i>² + <i>qx</i> + 1 = 0`,`<i>px</i>² &#8722; <i>qx</i> + 1 = 0`,`<i>qx</i>² &#8722; <i>px</i> + 1 = 0`,`<i>qx</i>² + <i>px</i> + 1 = 0`],answer:2},
+
+{id:20,sec:2,mcq:true,
+ eq:`${x2} &#8722; <i>kx</i> + 9 = 0`,
+ text:'Find the range of <i>k</i> for which the equation has <strong>real and distinct roots</strong>.',
+ options:['|<i>k</i>| &gt; 6','|<i>k</i>| &#8805; 6','|<i>k</i>| &lt; 6','|<i>k</i>| &#8804; 6'],answer:0},
+
+{id:21,sec:2,mcq:false,
+ eq:`${x2} &#8722; <i>px</i> + 64 = 0`,
+ text:'One root is <strong>three times the other</strong>. Find the <strong>sum of all possible values of <i>p</i></strong>.',
+ answer:'0',tol:0},
+
+{id:22,sec:2,mcq:true,
+ eq:`${x2} &#8722; 5<i>x</i> + 3 = 0`,
+ text:`If ${α} and ${β} are the roots, find the value of <strong>${fr(β,α)} + ${fr(α,β)}</strong>.`,
+ options:[`&#8722;${fr(19,3)}`,`${fr(19,3)}`,`${fr(19,5)}`,`&#8722;${fr(19,5)}`],answer:1},
+
+{id:23,sec:2,mcq:true,
+ eq:`${x2} &#8722; 6<i>x</i> + 4 = 0`,
+ text:'Find the quadratic equation whose roots are <strong>2 more</strong> than the roots of the given equation.',
+ options:[`${x2} + 5<i>x</i> + 20 = 0`,`${x2} + 10<i>x</i> + 20 = 0`,`${x2} &#8722; 10<i>x</i> + 20 = 0`,`${x2} &#8722; 10<i>x</i> &#8722; 10 = 0`],answer:2},
+
+{id:24,sec:2,mcq:true,
+ eq:`${x2} &#8722; 5<i>x</i> + 8 = 0`,
+ text:`${α} and ${β} are the roots. Find the equation whose roots are <strong>${α}²</strong> and <strong>${β}²</strong>.`,
+ options:[`${x2} + 9<i>x</i> + 64 = 0`,`${x2} &#8722; 6<i>x</i> + 64 = 0`,`${x2} &#8722; 9<i>x</i> + 16 = 0`,`${x2} &#8722; 9<i>x</i> + 64 = 0`],answer:3},
+
+{id:25,sec:2,mcq:true,
+ text:`Ram wrote the <strong>coefficient of <i>x</i> incorrectly</strong> and got roots {3, &#8722;5}. Rahim wrote the <strong>constant term incorrectly</strong> and got roots {&#8722;4, &#8722;6}. Find the <strong>actual quadratic equation</strong>.`,
+ options:[`${x2} + 15<i>x</i> &#8722; 10 = 0`,`${x2} + 10<i>x</i> &#8722; 15 = 0`,`${x2} &#8722; 10<i>x</i> + 15 = 0`,`${x2} &#8722; 15<i>x</i> + 10 = 0`],answer:1},
+
+// ── §3: NESTED RADICALS & CONTINUED FRACTIONS ──
+{id:26,sec:3,mcq:false,
+ eq:'&#8730;(20 + &#8730;(20 + &#8730;(20 + &#8730;(20 + &#xB7;&#xB7;&#xB7;)))) till &#8734;',
+ text:'Find the value of the nested radical expression.',
+ answer:'5',tol:0},
+
+{id:27,sec:3,mcq:false,
+ eq:'&#8730;(42 &#8722; &#8730;(42 &#8722; &#8730;(42 &#8722; &#8730;(42 &#8722; &#xB7;&#xB7;&#xB7;)))) till &#8734;',
+ text:'Find the value of the nested radical expression.',
+ answer:'6',tol:0},
+
+{id:28,sec:3,mcq:false,
+ eq:'&#8730;(88 + 3&#8730;(88 + 3&#8730;(88 + 3&#8730;(88 + &#xB7;&#xB7;&#xB7;)))) till &#8734;',
+ text:'Find the value of the nested radical expression.',
+ answer:'11',tol:0},
+
+{id:29,sec:3,mcq:false,
+ eq:'&#8730;(35 &#8722; 2&#8730;(35 &#8722; 2&#8730;(35 &#8722; 2&#8730;(35 &#8722; &#xB7;&#xB7;&#xB7;)))) till &#8734;',
+ text:'Find the value of the nested radical expression.',
+ answer:'5',tol:0},
+
+{id:30,sec:3,mcq:true,
+ eq:'&#8730;(5 + &#8730;(5 + &#8730;(5 + &#8730;(5 + &#xB7;&#xB7;&#xB7;)))) till &#8734;',
+ text:'Find the value of the nested radical expression.',
+ options:[`${fr('&#8730;21 + &#8730;2',2)}`,`${fr('&#8730;21 &#8722; &#8730;2',2)}`,`${fr('&#8730;21 &#8722; 1',2)}`,`${fr('&#8730;21 + 1',2)}`],answer:3},
+
+{id:31,sec:3,mcq:true,
+ eq:'&#8730;(7 &#8722; &#8730;(7 &#8722; &#8730;(7 &#8722; &#8730;(7 &#8722; &#xB7;&#xB7;&#xB7;)))) till &#8734;',
+ text:'Find the value of the nested radical expression.',
+ options:[`${fr('&#8730;29 &#8722; 1',2)}`,`${fr('&#8730;29 + 1',2)}`,`${fr('&#8722;&#8730;29 + 1',2)}`,'None of these'],answer:0},
+
+{id:32,sec:3,mcq:false,
+ eq:'&#8730;(110 + &#8730;(110 + &#8730;(110 + &#8730;(110 + &#xB7;&#xB7;&#xB7;)))) till &#8734;',
+ text:'Find the value of the nested radical expression.',
+ answer:'11',tol:0},
+
+{id:33,sec:3,mcq:true,
+ eq:'&#8730;3 &sdot; &#8730;&#8730;3 &sdot; &#8730;&#8730;&#8730;3 &sdot; &#8730;&#8730;&#8730;&#8730;3 &sdot; &#8730;&#8730;&#8730;&#8730;&#8730;3 &nbsp;(5 nested square roots of 3)',
+ text:'Evaluate the nested product of five square roots.',
+ options:['3<sup>31/32</sup>','3<sup>32/31</sup>','3<sup>33/35</sup>','None of these'],answer:0},
+
+{id:34,sec:3,mcq:true,
+ eq:'&#8730;(5 + 2&#8730;(5 &#8722; 2&#8730;(5 + 2&#8730;(5 &#8722; &#xB7;&#xB7;&#xB7;)))) till &#8734;',
+ text:'Find the value (alternating signs).',
+ options:['&#8730;2 &#8722; 1','&#8730;2 + 1','&#8730;5 + 1','&#8730;5 &#8722; 1'],answer:1},
+
+{id:35,sec:3,mcq:false,
+ eq:'&#8730;(7 &#8722; 2&#8730;(7 + 2&#8730;(7 &#8722; 2&#8730;(7 + &#xB7;&#xB7;&#xB7;)))) till &#8734;',
+ text:'Find the value (alternating signs).',
+ answer:'1',tol:0},
+
+{id:36,sec:3,mcq:true,
+ eq:'&#8730;(11 + 3&#8730;(11 + 3&#8730;(11 + 3&#8730;(11 + &#xB7;&#xB7;&#xB7;)))) till &#8734;',
+ text:'Find the value of the nested radical expression.',
+ options:[`${fr('&#8730;53 &#8722; 3',2)}`,`${fr('&#8722;&#8730;53 + 3',2)}`,`${fr('&#8730;53 + 3',2)}`,'None of these'],answer:2},
+
+{id:37,sec:3,mcq:true,
+ eq:'&#8730;(13 &#8722; 3&#8730;(13 &#8722; 3&#8730;(13 &#8722; 3&#8730;(13 &#8722; &#xB7;&#xB7;&#xB7;)))) till &#8734;',
+ text:'Find the value of the nested radical expression.',
+ options:[`${fr('&#8730;26 &#8722; 3',2)}`,`${fr('&#8730;67 &#8722; 3',2)}`,`${fr('&#8730;61 + 3',2)}`,`${fr('&#8730;61 &#8722; 3',2)}`],answer:3},
+
+{id:38,sec:3,mcq:true,
+ eq:`${fr(1,'3 + ' + fr(1,'3 + ' + fr(1,'3 + &sdot;&sdot;&sdot;')))} &nbsp; till &#8734;`,
+ text:'Find the value of the continued fraction.',
+ options:[`${fr('&#8730;13 + 3',2)}`,`${fr('&#8730;13 &#8722; 3',2)}`,`${fr('2&#8730;13 &#8722; 3',2)}`,`${fr('2&#8730;13 + 3',2)}`],answer:1},
+];
+
+const TOTAL=38,SECS=60*60;
+let cur=1,timeLeft=SECS,timerInt=null,submitted=false;
+let student={name:'',center:'',batch:''};
+const state={};
+for(let i=1;i<=TOTAL;i++)state[i]={status:'nv',response:null};
+state[1].status='na';
+const secLabel=['','Solving Quadratics','Root Properties','Nested Radicals'];
+const bClass=['','b-s1','b-s2','b-s3'];
+
+function startTest(){
+  const name=document.getElementById('inp-name').value.trim();
+  const center=document.getElementById('inp-center').value;
+  const batch=document.getElementById('inp-batch').value.trim();
+  const err=document.getElementById('entry-err');
+  if(!name){err.textContent='Please enter your name.';return;}
+  if(!center){err.textContent='Please select your center.';return;}
+  if(!batch){err.textContent='Please enter your batch.';return;}
+  student={name,center,batch};
+  document.getElementById('entry-ov').style.display='none';
+  document.getElementById('h-student').textContent=name;
+  renderQ(1);updatePalette();startTimer();
+}
+
+function startTimer(){
+  timerInt=setInterval(()=>{
+    timeLeft--;
+    const m=Math.floor(timeLeft/60),s=timeLeft%60;
+    const el=document.getElementById('timer');
+    el.textContent=`${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+    el.className='timer'+(timeLeft<=300?' warn':'')+(timeLeft<=60?' danger':'');
+    if(timeLeft<=0){clearInterval(timerInt);document.getElementById('timeup-ov').classList.add('show');}
+  },1000);
+}
+function timeTaken(){const e=SECS-timeLeft,m=Math.floor(e/60),s=e%60;return`${m}m ${s}s`;}
+
+function renderQ(qid){
+  const q=Q[qid-1],st=state[qid];
+  const typeBadge=q.mcq?`<span class="badge b-mcq">MCQ &middot; &minus;1</span>`:`<span class="badge b-tita">TITA</span>`;
+  let html=`<div class="q-meta"><span class="q-num">Q.${q.id}</span><span class="badge ${bClass[q.sec]}">${secLabel[q.sec]}</span>${typeBadge}</div>`;
+  if(q.eq) html+=`<div class="eq-box">${q.eq}</div>`;
+  const instrText=q.mcq
+    ?'&#128309; Select the correct option. <strong style="color:#b91c1c">&minus;1 for wrong answer.</strong>'
+    :'&#128204; Type In The Answer &mdash; digits only. No negative marking.';
+  html+=`<div class="instr">${instrText}</div>`;
+  html+=`<div class="q-text">${q.text}</div>`;
+  if(q.mcq){
+    html+=`<ul class="options">`;
+    q.options.forEach((opt,i)=>{
+      const sel=st.response===i?'selected':'';
+      html+=`<li class="option ${sel}" onclick="selectOpt(${qid},${i})">
+        <div class="opt-circle"><div class="opt-dot"></div></div>
+        <span class="opt-lbl">${L[i]}.</span>
+        <span class="opt-content">${opt}</span>
+      </li>`;
+    });
+    html+=`</ul>`;
+  } else {
+    html+=`<div class="tita-wrap">
+      <div class="tita-label">Your Answer</div>
+      <input class="tita-input" id="tita" type="text" inputmode="decimal" maxlength="12" placeholder="&mdash;" value="${st.response!==null&&st.response!==undefined?st.response:''}">
+      <div class="tita-hint">Digits and decimal point only</div>
+    </div>`;
+  }
+  document.getElementById('q-inner').innerHTML=html;
+  document.getElementById('cur-q').textContent=qid;
+  ['tab1','tab2','tab3'].forEach((id,i)=>document.getElementById(id).classList.toggle('active',q.sec===i+1));
+  if(!q.mcq){
+    const inp=document.getElementById('tita');
+    if(inp){
+      inp.addEventListener('input',()=>{
+        let v=inp.value.replace(/[^0-9.]/g,'');
+        const pts=v.split('.');if(pts.length>2)v=pts[0]+'.'+pts.slice(1).join('');
+        inp.value=v;
+        state[cur].response=v||null;
+        state[cur].status=v?(state[cur].status==='mrv'?'amrv':'ans'):'na';
+        updatePalette();
+      });
+      inp.addEventListener('keydown',e=>{if(e.key==='Enter')saveAndNext();});
+      inp.focus();
+    }
+  }
+  updatePalette();updateJumps();
+}
+
+function selectOpt(qid,idx){
+  state[qid].response=idx;
+  state[qid].status=(state[qid].status==='mrv'?'amrv':'ans');
+  renderQ(qid);
+}
+function updateJumps(){
+  const q=Q[cur-1];
+  document.querySelectorAll('.sj-btn').forEach((b,i)=>b.classList.toggle('active',q.sec===i+1));
+}
+function updatePalette(){
+  document.getElementById('palette').innerHTML=Q.map(q=>{
+    const s=state[q.id];
+    let cls='pb p-'+s.status;if(q.id===cur)cls+=' cur';
+    return`<button class="${cls}" onclick="goToQ(${q.id})">${q.id}</button>`;
+  }).join('');
+}
+function goToQ(qid){
+  if(state[qid].status==='nv')state[qid].status='na';
+  cur=qid;renderQ(qid);
+}
+function navigate(d){const n=cur+d;if(n<1||n>TOTAL)return;goToQ(n);}
+function saveAndNext(){if(cur<TOTAL)goToQ(cur+1);}
+function markForReview(){
+  const s=state[cur];
+  s.status=s.status==='ans'?'amrv':(s.status==='amrv'?'ans':(s.status==='mrv'?'na':'mrv'));
+  renderQ(cur);updatePalette();
+}
+function clearResp(){state[cur].response=null;state[cur].status='na';renderQ(cur);updatePalette();}
+
+function showConfirm(){
+  let ans=0,na=0,mrv=0;
+  for(let i=1;i<=TOTAL;i++){
+    const s=state[i].status;
+    if(s==='ans'||s==='amrv')ans++;else if(s==='mrv')mrv++;else na++;
+  }
+  document.getElementById('c-stats').innerHTML=
+    `<div class="cs-row"><span>&#10003; Answered</span><span><strong>${ans}</strong></span></div>
+     <div class="cs-row"><span>&#10007; Not Answered</span><span><strong>${na}</strong></span></div>
+     <div class="cs-row"><span>&#9873; Marked (unanswered)</span><span><strong>${mrv}</strong></span></div>`;
+  document.getElementById('confirm-ov').classList.add('show');
+}
+function closeConfirm(){document.getElementById('confirm-ov').classList.remove('show');}
+function doSubmit(){
+  if(submitted)return;submitted=true;clearInterval(timerInt);
+  ['confirm-ov','timeup-ov'].forEach(id=>document.getElementById(id).classList.remove('show'));
+  document.getElementById('submitting-ov').classList.add('show');
+  setTimeout(()=>{document.getElementById('submitting-ov').classList.remove('show');showResults();},2800);
+}
+
+function evalQ(q){
+  const resp=state[q.id].response;
+  const has=resp!==null&&resp!==undefined&&resp!=='';
+  if(!has)return{result:'skip',marks:0};
+  if(q.mcq)return parseInt(resp)===q.answer?{result:'correct',marks:3}:{result:'wrong',marks:-1};
+  const r=parseFloat(resp),a=parseFloat(q.answer),tol=q.tol||0;
+  if(!isNaN(r)&&!isNaN(a)&&Math.abs(r-a)<=tol+0.005)return{result:'correct',marks:3};
+  return{result:'wrong',marks:0};
+}
+
+function showResults(){
+  let total=0,correct=0,wrong=0,skip=0;
+  const secD=[{q:0,c:0,w:0,s:0,m:0},{q:0,c:0,w:0,s:0,m:0},{q:0,c:0,w:0,s:0,m:0}];
+  Q.forEach(q=>{
+    const{result,marks}=evalQ(q);total+=marks;
+    const sd=secD[q.sec-1];sd.q++;sd.m+=marks;
+    if(result==='correct'){correct++;sd.c++;}
+    else if(result==='wrong'){wrong++;sd.w++;}
+    else{skip++;sd.s++;}
+  });
+  const acc=correct+wrong>0?Math.round(correct/(correct+wrong)*100):0;
+  document.getElementById('s-strip').innerHTML=
+    `<span>&#128100; <strong>${student.name||'&mdash;'}</strong></span>
+     <span>Center: <strong>${student.center||'&mdash;'}</strong></span>
+     <span>Batch: <strong>${student.batch||'&mdash;'}</strong></span>
+     <span>Time: <strong>${timeTaken()}</strong></span>`;
+  document.getElementById('score-cards').innerHTML=
+    `<div class="sc"><div class="sc-label">Total Score</div><div class="sc-val blue">${total}</div><div style="font-size:10px;color:#888;margin-top:4px">out of 114</div></div>
+     <div class="sc"><div class="sc-label">Accuracy</div><div class="sc-val gld">${acc}%</div><div style="font-size:10px;color:#888;margin-top:4px">${correct} of ${correct+wrong}</div></div>
+     <div class="sc"><div class="sc-label">Correct</div><div class="sc-val grn">+${correct*3}</div><div style="font-size:10px;color:#888;margin-top:4px">${correct} questions</div></div>
+     <div class="sc"><div class="sc-label">Skipped</div><div class="sc-val" style="color:var(--gray)">${skip}</div><div style="font-size:10px;color:#888;margin-top:4px">no penalty</div></div>`;
+  const sNames=['&#167;1 Solving Quadratics','&#167;2 Root Properties','&#167;3 Nested Radicals'];
+  const sMax=[42,33,39];
+  document.getElementById('atbl').innerHTML=
+    `<tr><th>Section</th><th>Qs</th><th>Attempted</th><th>Correct</th><th>Wrong</th><th>Skipped</th><th>Score</th><th>Max</th></tr>`+
+    secD.map((sd,i)=>`<tr>
+      <td><strong>${sNames[i]}</strong></td>
+      <td>${sd.q}</td><td>${sd.c+sd.w}</td><td>${sd.c}</td><td>${sd.w}</td><td>${sd.s}</td>
+      <td style="font-weight:700;color:${sd.m>0?'#16a34a':sd.m<0?'#b91c1c':'#555'}">${sd.m}</td>
+      <td style="color:#888">${sMax[i]}</td>
+    </tr>`).join('')+
+    `<tr style="background:#e0eaff">
+      <td><strong>TOTAL</strong></td><td><strong>38</strong></td>
+      <td><strong>${correct+wrong}</strong></td><td><strong>${correct}</strong></td>
+      <td><strong>${wrong}</strong></td><td><strong>${skip}</strong></td>
+      <td style="font-weight:700;font-size:15px;color:${total>=0?'var(--navy)':'var(--red)'}">${total}</td>
+      <td style="font-weight:700;color:#888">114</td>
+    </tr>`;
+  submitToGF({total,correct,wrong,skip});
+  renderReview('all');
+  document.getElementById('results-ov').classList.add('show');
+}
+
+function renderReview(filter){
+  let html='';
+  Q.forEach(q=>{
+    const{result}=evalQ(q);
+    if(filter!=='all'&&result!==filter)return;
+    const resp=state[q.id].response;
+    const has=resp!==null&&resp!==undefined&&resp!=='';
+    const stHtml=result==='correct'
+      ?`<span class="rq-st ok">&#10003; Correct (+3)</span>`
+      :result==='wrong'
+        ?`<span class="rq-st no">&#10007; Wrong (${q.mcq?'&minus;1':'0'})</span>`
+        :`<span class="rq-st sk">&mdash; Skipped</span>`;
+    let ansHtml='';
+    if(q.mcq){
+      const yi=has?parseInt(resp):-1,ci=q.answer;
+      const corrText=`${L[ci]}. ${q.options[ci].replace(/<[^>]+>/g,'')}`;
+      if(yi===-1) ansHtml=`<div class="rq-ans"><span class="rq-your">Your: <strong>&mdash;</strong></span>&nbsp;&nbsp;<span class="rq-correct">&#10003; ${corrText}</span></div>`;
+      else if(yi===ci) ansHtml=`<div class="rq-ans"><span class="rq-correct">&#10003; ${corrText}</span></div>`;
+      else ansHtml=`<div class="rq-ans"><span class="rq-your">Your: <strong>${L[yi]}</strong></span>&nbsp;&nbsp;<span class="rq-correct">&#10003; ${corrText}</span></div>`;
+    } else {
+      ansHtml=`<div class="rq-ans"><span class="rq-your">Your: <strong>${has?resp:'&mdash;'}</strong></span>&nbsp;&nbsp;<span class="rq-correct">&#10003; Correct: <strong>${q.answer}</strong></span></div>`;
+    }
+    const qShort=(q.text||'').replace(/<[^>]+>/g,'').substring(0,90);
+    html+=`<div class="rq">
+      <div class="rq-hdr">
+        <span class="rq-num">Q.${q.id}</span>
+        <span class="badge ${bClass[q.sec]}" style="font-size:10px">${secLabel[q.sec]}</span>
+        <span class="badge ${q.mcq?'b-mcq':'b-tita'}" style="font-size:10px">${q.mcq?'MCQ':'TITA'}</span>
+        ${stHtml}
+      </div>
+      ${q.eq?`<div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#555;margin-bottom:2px">${q.eq.replace(/<[^>]+>/g,'')}</div>`:''}
+      <div style="font-size:12px;color:var(--text);margin-bottom:3px">${qShort}${qShort.length>=90?'&hellip;':''}</div>
+      ${ansHtml}
+    </div>`;
+  });
+  if(!html)html='<div style="padding:20px;text-align:center;color:#999">No questions in this category.</div>';
+  document.getElementById('review-list').innerHTML=html;
+}
+function filterReview(f,btn){
+  document.querySelectorAll('.rtab').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');renderReview(f);
+}
+function closeResults(){document.getElementById('results-ov').classList.remove('show');}
+
+function buildRespStr(){
+  return Q.map(q=>{
+    const resp=state[q.id].response;
+    const has=resp!==null&&resp!==undefined&&resp!=='';
+    if(!has)return`Q${q.id}:&ndash;`;
+    const{result}=evalQ(q);
+    return`Q${q.id}:${q.mcq?L[parseInt(resp)]:resp}(${result==='correct'?'&#10003;':'&#10007;'})`;
+  }).join(' ');
+}
+async function submitToGF(scores){
+  const p=new URLSearchParams(),f=GF.f;
+  p.append(f.name,student.name);p.append(f.center,student.center);
+  p.append(f.batch,student.batch);p.append(f.total,scores.total);
+  p.append(f.correct,scores.correct);p.append(f.wrong,scores.wrong);
+  p.append(f.skip,scores.skip);p.append(f.time,timeTaken());
+  p.append(f.resp,buildRespStr().replace(/&[a-z]+;|&#[0-9]+;/g,''));
+  try{
+    await fetch(GF.url,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:p.toString()});
+    showToast('&#10003; Responses submitted to IMS Gujarat');
+  }catch(e){showToast('&#9888; Could not reach Google Forms',true);}
+}
+
+function downloadPDF(){
+  const sNames=['&#167;1 Solving Quadratics','&#167;2 Root Properties','&#167;3 Nested Radicals'];
+  let curSec=0,body='';
+  Q.forEach(q=>{
+    if(q.sec!==curSec){curSec=q.sec;body+=`<div class="sec-hdr">${sNames[q.sec-1]}</div>`;}
+    const eqText=q.eq?(q.eq.replace(/<[^>]+>/g,'')):'';
+    body+=`<div class="qb"><div class="qrow"><span class="qn">Q.${q.id} <span class="qt-badge">${q.mcq?'MCQ':'TITA'}</span></span><span class="qt">${eqText ? eqText+' — ' : ''}${q.text.replace(/<[^>]+>/g,'')}</span></div>`;
+    if(q.mcq){
+      body+=`<div class="opts">${q.options.map((o,i)=>`<span class="${i===q.answer?'opt-c':''}">${L[i]}. ${o.replace(/<[^>]+>/g,'')}</span>`).join('&nbsp;&nbsp;')}</div>`;
+      body+=`<div class="ans">&#10003; Answer: ${L[q.answer]}. ${q.options[q.answer].replace(/<[^>]+>/g,'')}</div>`;
+    } else {
+      body+=`<div class="ans">&#10003; Answer: ${q.answer}</div>`;
+    }
+    body+=`</div>`;
+  });
+  const html=`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Math Reboot 9 &ndash; Answer Key</title>
+  <style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:Arial,sans-serif;font-size:10.5px;color:#000;padding:18px 22px}
+  h1{font-size:14px;font-weight:700;color:#0f2556;margin-bottom:3px}.meta{font-size:9.5px;color:#555;margin-bottom:4px}
+  .note{font-size:9.5px;color:#888;font-style:italic;border-bottom:1px solid #eee;padding-bottom:7px;margin-bottom:12px}
+  .sec-hdr{font-size:12px;font-weight:700;color:#0f2556;margin:12px 0 5px;border-bottom:2px solid #0f2556;padding-bottom:2px}
+  .qb{margin-bottom:5px;padding:5px 8px;border:1px solid #ddd;border-radius:4px;page-break-inside:avoid}
+  .qrow{display:flex;gap:5px;align-items:flex-start;margin-bottom:2px}
+  .qn{font-weight:700;color:#2851a3;min-width:50px;flex-shrink:0;font-size:10px}
+  .qt-badge{background:#e0eaff;color:#2851a3;padding:1px 3px;border-radius:3px;font-size:8px;font-weight:600}
+  .qt{font-size:10px;color:#111;line-height:1.45}.ans{font-size:10.5px;font-weight:700;color:#1a7a3c;margin-top:2px}
+  .opts{font-size:9.5px;color:#333;margin:2px 0}.opt-c{font-weight:700;color:#1a7a3c}
+  </style></head><body>
+  <h1>QA &ndash; Math Reboot 9 &middot; Answer Key</h1>
+  <div class="meta">Student: <strong>${student.name||'&mdash;'}</strong> &nbsp;|&nbsp; Center: <strong>${student.center||'&mdash;'}</strong> &nbsp;|&nbsp; Batch: <strong>${student.batch||'&mdash;'}</strong> &nbsp;|&nbsp; Date: ${new Date().toLocaleDateString('en-IN')}</div>
+  <div class="note">38 questions &middot; MCQ: &minus;1 for wrong &middot; TITA: no negative &middot; Quadratic Equations &amp; Nested Radicals</div>
+  ${body}</body></html>`;
+  const win=window.open('','_blank');win.document.write(html);win.document.close();
+  win.onload=()=>{win.focus();win.print();};
+}
+
+function showToast(msg,isErr=false){
+  const t=document.getElementById('toast');
+  t.innerHTML=msg;t.className='toast'+(isErr?' err':'')+' show';
+  setTimeout(()=>t.classList.remove('show'),4000);
+}
+
+renderQ(1);updatePalette();
+</script>
+</body>
+</html>
